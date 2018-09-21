@@ -1,0 +1,108 @@
+<div class="row justify-content-center pl-2 pb-1">
+  <h1>GHC Sessions</h1>
+</div>
+
+<div class="row sticky-top float-right pr-4">
+  <button
+    class="btn btn-secondary sticky-top float-right"
+    (click)="onScroll('Wednesday')"
+  >
+    Go to Wednesday
+  </button>
+  <button
+    class="btn btn-secondary"
+    (click)="onScroll('Thursday')"
+  >
+    Go to Thursday
+  </button>
+  <button
+    class="btn btn-secondary"
+    (click)="onScroll('Friday')"
+  >
+    Go to Friday
+  </button>
+  <button
+    class="btn btn-secondary"
+    (click)="onScroll('workshopDescription')"
+  >
+    Back to top
+  </button>
+</div>
+
+<div data-id="{{ sessionsGroup.day | date:'EEEE' }}" class="pt-4" *ngFor="let sessionsGroup of sessionsByDay">
+  <div class="row pl-4">
+    <h2>{{ sessionsGroup.day | date:'EEEE' }}</h2>
+  </div>
+
+  <div class="row p-1">
+    <div
+      *ngFor="let session of sessionsGroup.sessions; let i = index"
+      class="col-sm-4 mt-4"
+    >
+      <div class="card border-secondary">
+        <div class="card-header">
+          {{ session.name }}
+        </div>
+
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span class="oi oi-clock" title="Time" aria-hidden="true"></span>
+              {{ session.startTime | date: 'hh:mm a' }} - {{ session.endTime | date: 'hh:mm a' }}
+            <span class="oi oi-map-marker pl-2"
+              *ngIf="session.location"
+              title="Location"
+              aria-hidden="true"
+            ></span>
+              {{ session.location ? session.location : ''}}
+            <span
+              class="oi oi-people pl-2"
+              *ngIf="session.audienceLevel"
+              title="Audience Level"
+              aria-hidden="true"
+            ></span>
+              {{ session.audienceLevel ? session.audienceLevel : '' }}
+          </h6>
+
+          <p class="card-text text-justify" *ngIf="session.description">
+            {{ session.description | limitTo : 200 }}
+          </p>
+
+          <div class="row">
+            <div class="col-6">
+              <span class="float-left">
+                <button
+                  class="btn btn-lg btn-link"
+                  (click)="openSessionDetails(session)"
+                >Read More</button>
+              </span>
+            </div>
+            <div class="col-6">
+              <span class="float-right">
+                <button
+                  *ngIf="!session.isSelected"
+                  [ngClass]="{'btn': true, 'btn-primary': true, 'btn-sm': true, 'disabled': processingSession === session.id}"
+                  (click)="addToCalendar(session.id)"
+                >
+                  Add to Calendar
+                </button>
+                <button
+                  [id] = "'removeFromCalendar' + session.id"
+                  *ngIf="session.isSelected"
+                  [ngClass]="{'btn': true, 'btn-danger': true, 'btn-sm': true, 'disabled': processingSession === session.id}"
+                  (click)="removeFromCalendar(session.id)"
+                >
+                  Remove from Calendar
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer text-muted" *ngIf="session.hasConflict">
+            <i>This session conflicts with another on your calendar</i>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
