@@ -1,0 +1,27 @@
+<div class="row justify-content-center pb-1">
+  <h1>My Calendar</h1>
+</div>
+
+<div class="row pb-4 pr-2 justify-content-center">
+  <div *ngIf="!calendarEvents || calendarEvents.length == 0">
+    <h4>Your calendar is currently empty</h4>
+  </div>
+  <div
+    [ngClass]="{'col-sm-4': true, 'text-center': true, 'border-right': !isLast}"
+    *ngFor="let calendarDay of calendarEvents; last as isLast"
+  >
+    <div id="calendarDateHeader" class="row">
+      <h5 class="col-12">{{ calendarDay.day | date:'EEEE' }}</h5>
+      <span class="col-12 date">{{ calendarDay.day | date:'MMM d' }}</span>
+    </div>
+
+    <button
+      type="button"
+      [ngClass]="{'btn': true , 'btn-sm': true, 'btn-outline-info': !session.hasConflict, 'btn-outline-danger': session.hasConflict, 'col-sm-12': true, 'mt-2': true, 'mb-2': true}"
+      *ngFor="let session of calendarDay.sessions"
+      (click)="openSessionDetails(session)"
+    >
+      {{ session.startTime | date: 'hh:mm a' }} - {{ session.endTime | date: 'hh:mm a' }}: {{ session.name }}
+    </button>
+  </div>
+</div>

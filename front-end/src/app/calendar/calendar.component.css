@@ -1,0 +1,12 @@
+.date {
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+#calendarDateHeader:hover {
+  background-color: #f8f9fa;
+}
+
+.btn{
+  white-space:normal !important;
+}

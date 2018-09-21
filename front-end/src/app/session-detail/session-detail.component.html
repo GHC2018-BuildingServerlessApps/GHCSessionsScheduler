@@ -1,0 +1,82 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ session.name }}</h5>
+  <button type="button" class="close" aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <p>
+    <span class="oi oi-clock" title="Time" aria-hidden="true"></span>
+    {{ session.startTime | date: 'hh:mm a' }} - {{ session.endTime | date: 'hh:mm a' }}
+    <span
+      class="oi oi-map-marker pl-2"
+      *ngIf="session.location"
+      title="Location"
+      aria-hidden="true"
+    ></span>
+    {{ session.location ? session.location : ''}}
+    <span
+      class="oi oi-people pl-2"
+      *ngIf="session.audienceLevel"
+      title="Audience Level"
+      aria-hidden="true"
+    ></span>
+    {{ session.audienceLevel ? session.audienceLevel : '' }}
+    <span
+      class="oi oi-person pl-2"
+      *ngIf="session.speakers"
+      title="Speakers"
+      aria-hidden="true"
+    ></span>
+    {{ session.speakers ? 'Speakers: ' + session.speakers : '' }}
+  </p>
+
+  <p *ngIf="session.focusArea || session.track">
+    <span class="oi oi-eye"
+      *ngIf="session.focusArea"
+      title="Focus Area"
+      aria-hidden="true"
+    ></span>
+    {{ session.focusArea ? 'Focus Area: ' + session.focusArea : ''}}
+    <span
+      [ngClass]="{'oi': true, 'oi-bolt': true, 'pl-2': session.focusArea}"
+      *ngIf="session.track"
+      title="Track"
+      aria-hidden="true"
+    ></span>
+    {{ session.track ? 'Track: ' + session.track : ''}}
+  </p>
+
+  <p></p>
+  <p *ngIf="session.description">{{ session.description }}</p>
+  <p class="text-danger" *ngIf="session.hasConflict">
+    This session conflicts with another on your calendar
+  </p>
+</div>
+
+<div class="modal-footer">
+  <button
+    *ngIf="!session.isSelected"
+    class="btn btn-primary btn-sm"
+    (click)="addToCalendar(session.id)"
+  >
+    Add to Calendar
+  </button>
+  <button
+    *ngIf="session.isSelected"
+    class="btn btn-danger btn-sm"
+    (click)="removeFromCalendar(session.id)"
+  >
+    Remove from Calendar
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="activeModal.close('Close click')"
+  >
+    Close
+  </button>
+</div>
