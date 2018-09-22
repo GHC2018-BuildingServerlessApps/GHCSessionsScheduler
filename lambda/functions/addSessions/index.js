@@ -5,16 +5,20 @@ const AWS = require('aws-sdk'),
 
 exports.handler = (event, context, callback)  => {
     var fs = require('fs');
+	console.log("Loading JSON file.");
     var sessions = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-    
+    console.log("Loaded JSON file.");
+
     var arrayOfArrays = chunkArray(sessions, 25);
+    var id = 1;
     arrayOfArrays.forEach(function(array) {
-        batchWriteSessionsToTable(array);
+        batchWriteSessionsToTable(array, id);
+        id = id + 1;
     });
     callback(null, processResponse(IS_CORS, "Success"));
 };
 
-function batchWriteSessionsToTable(sessions) {
+function batchWriteSessionsToTable(sessions, id) {
     var i;
     var completed = [];
     for (i = 0; i < sessions.length; i++) {
@@ -34,13 +38,14 @@ function batchWriteSessionsToTable(sessions) {
         "GHCSessions": completed
       }
     };
-    
+    console.log("Starting batchWrite call for id " + id);
     dynamoDb.batchWrite(params, function(err, data) {
       if (err) {
         console.log(err); 
       } 
       else  {
-        //success
+		 //success
+		console.log("Successful batchWrite call for id: " + id);
       }
     });
 }

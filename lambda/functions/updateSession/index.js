@@ -46,9 +46,12 @@ exports.handler = (event, context, callback) => {
         params.ExpressionAttributeValues[`:${property}`] = editedItem[property];
     });
     
+    console.log("Updating session");
     dynamoDb.update(params)
     .promise()
     .then(function(updated)  {
+		console.log("Update successful");
+
         //if the property that was updated was not isSelected, we can return
         const importantProperty = "isSelected";
         if (!Object.keys(editedItem).includes(importantProperty)) {
@@ -70,6 +73,7 @@ exports.handler = (event, context, callback) => {
 
 
 function performPostUpdateActions(updated, importantProperty, updatedIds, context) {
+	console.log("Checking for conflicting sessions");
     const updatedItem = updated["Attributes"]
     updatedIds.push(updatedItem["id"]);
 
@@ -93,10 +97,13 @@ function performPostUpdateActions(updated, importantProperty, updatedIds, contex
         if (err) {
             console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
         } else {
+			console.log("Successful query on startDate-index");
+
             if (updatedItem[importantProperty] == 1) {
                 gatherConflictingSessions(data.Items, updatedItem, conflictingSessionsToSet);
                 
                 if (conflictingSessionsToSet.length == 0) {
+					console.log("No conflicting sessions");
                     context.succeed(processResponse(IS_CORS, "Success"));  
                 }
                 updateConflicts(conflictingSessionsToSet, 1, updatedIds, context);
@@ -115,6 +122,7 @@ function performPostUpdateActions(updated, importantProperty, updatedIds, contex
                     }
                 });
                 if (conflictingSessionsToUnset.length == 0) {
+					console.log("No conflicting sessions to unset");
                     return context.succeed(processResponse(IS_CORS, "Success"));  
                 }
                 updateConflicts(conflictingSessionsToUnset, 0, updatedIds, context);
@@ -134,9 +142,7 @@ function gatherConflictingSessions(items, updatedItem, conflictingSessionsToSet)
             
             if ((item_start_time >= updated_start_time  && item_start_time < updated_end_time) || 
                 (updated_end_time > item_start_time && updated_end_time <= item_end_time )) {
-                if(item["hasConflict"] == 0) {
                     conflictingSessionsToSet.push(item);
-                }
             }
         }
     });
